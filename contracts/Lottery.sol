@@ -20,6 +20,8 @@ contract Lottery {
     uint256 private _pot;
 
     enum BlockStatus { Checkable, NotRevealed, BlockLimitPassed }
+    enum BettingResult { Fail, Win, Draw }
+
     event BET(uint256 index, address bettor, uint256 amount, byte challenges, uint256 answerBetInfo);
 
     constructor() public {
@@ -57,16 +59,16 @@ contract Lottery {
         BetInfo memory b;
         BlockStatus currentBlockStatus;
 
-        for(cur=_head;cur<_tail;cur++) {
+        for(cur = _head; cur < _tail ; cur++) {
             b = _bets[cur];
             currentBlockStatus = getBlockStatus(b.answerBlockNumber);
 
             // Checkable : block.number > answerBlockNumber && block.number < BLOCK_LIMIT + answerBlocknumber
             if (currentBlockStatus == BlockStatus.Checkable) {
                 // if win, bettor gets pot
-            
+
                 // if fail, bettor's money goes pot
-            
+
                 // if draw, refund bettor's money
             }
 
@@ -82,6 +84,45 @@ contract Lottery {
             }
             popBet(cur);
         }
+    }
+
+    /**
+     * @dev 베팅글자와 정답을 확인한다.
+     * @param challenges 베팅 글자
+     * @param answer 블락해쉬
+     * @return 정답결과
+     */
+    function isMatch(byte challenges, bytes32 answer) public pure returns (BettingResult) {
+        // challenges 0xab
+        // answer 0xab....ff 32bytes
+
+        byte c1 = challenges;
+        byte c2 = challenges;
+
+        byte a1 = answer[0];
+        byte a2 = answer[0];
+
+        c1 = c1 >> 4; // 0xab -> 0x0a
+        c1 = c1 << 4; // 0x0a -> 0xa0
+
+        a1 = a1 >> 4;
+        a1 = a1 << 4;
+
+        c2 = c2 << 4; // 0xab -> 0xb0
+        c2 = c2 >> 4; // 0xb0 -> 0x0b
+
+        a2 = a2 << 4;
+        a2 = a2 >> 4;
+
+        if (a1 == c1 && a2 == c2) {
+            return BettingResult.Win;
+        }
+
+        if (a1 == c1 || a2 == c2) {
+            return BettingResult.Draw;
+        }
+
+        return BettingResult.Fail;
     }
 
     function getBlockStatus(uint256 answerBlockNumber) internal view returns (BlockStatus) {

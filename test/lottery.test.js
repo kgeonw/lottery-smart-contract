@@ -16,7 +16,7 @@ contract("Lottery", ([deployer, user1, user2]) => {
         assert.equal(pot, 0);
     });
 
-    describe.only("Bet", () => {
+    describe("Bet", () => {
         it("should fail when the bet money is not 0.005 ETH", async () => {
             // Fail transaction
             await assertRevert(lottery.bet("0xab", {from : user1, value : 4000000000000000}));
@@ -47,6 +47,28 @@ contract("Lottery", ([deployer, user1, user2]) => {
             // check log
             // console.log(receipt);
             await expectEvent.inLogs(receipt.logs, "BET");
+        })
+    })
+
+    describe.only("isMatch", () => {
+        let blockHash = '0xabcfb5d48a08b02cb33dfe7e0aebe1b3b0e3be68f2af750aee5382d900905cdf';
+        
+        it("should be BettingResult.Win when two characters match", async () => {
+            let matchingResult = await lottery.isMatch('0xab', blockHash);
+            assert.equal(matchingResult, 1);
+        })
+
+        it("should be BettingResult.Fail when two characters not match", async () => {
+            let matchingResult = await lottery.isMatch('0xcd', blockHash);
+            assert.equal(matchingResult, 0);
+        })
+
+        it("should be BettingResult.Draw when two characters half match", async () => {
+            let matchingResult = await lottery.isMatch('0xaf', blockHash);
+            assert.equal(matchingResult, 2);
+
+            matchingResult = await lottery.isMatch('0xfb', blockHash);
+            assert.equal(matchingResult, 2);
         })
     })
 });
