@@ -38,6 +38,19 @@ contract Lottery {
     function getPot() public view returns (uint256 pot) {
         return _pot;
     }
+
+    /**
+     * @dev 베팅과 정답을 체크한다. 유저는 0.005 ETH를 보내야하고 베팅용 1 byte 글자를 보낸다.
+     * 큐에 저장된 베팅정보는 이후 distribute 함수에서 해결된다.
+     * @param challenges 유저가 배팅하는 글자
+     * @return 함수가 잘 수행되었는지 확인하는 bool 값
+     */
+    function betAndDistribute(byte challenges) public payable returns (bool result) {
+        bet(challenges);
+        distribute();
+        return true;
+    }
+    
     /**
      * @dev 베팅한다. 유저는 0.005 ETH를 보내야하고, 베팅용 1byte 글자를 보낸다.
       * 큐에 저장된 베팅정보는 이후 distribute 함수에서 해결된다.

@@ -20,6 +20,9 @@ OS X & 리눅스:
 npm install my-crazy-module --save
 ```
 
+ganache-cli -d -m tutorial
+
+
 윈도우:
 
 ```sh
@@ -36,9 +39,30 @@ _더 많은 예제와 사용법은 [Wiki][wiki]를 참고하세요._
 
 모든 개발 의존성 설치 방법과 자동 테스트 슈트 실행 방법을 운영체제 별로 작성합니다.
 
-```sh
-make install
-npm test
+## Prerequisites
+* ganache-cli
+* truffle
+
+## Setup & Test
+Truffle command
+```
+$ truffle migrate --reset
+$ truffle console
+```
+Ganache-cli command
+```
+$ ganache-cli -d -m tutorial
+```
+
+In terminal 1
+```
+$ ganache-cli
+```
+
+In project directory, terminal 2
+```
+$ npm install
+$ truffle test
 ```
 
 ## 업데이트 내역
