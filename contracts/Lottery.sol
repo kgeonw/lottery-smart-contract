@@ -11,7 +11,9 @@ contract Lottery {
     uint256 private _head;
     mapping (uint256 => BetInfo) private _bets;
 
-    address public owner;
+    address payable public owner;
+
+    uint256 private _pot;
     bool private mode = false; // false : use answer for test, true : use real block hash
     bytes32 public answerForTest;
 
@@ -19,12 +21,11 @@ contract Lottery {
     uint256 constant internal BET_BLOCK_INTERVAL = 3;
     uint256 constant internal BET_AMOUNT = 5 * 10 ** 15;
 
-    uint256 private _pot;
 
     enum BlockStatus { Checkable, NotRevealed, BlockLimitPassed }
     enum BettingResult { Fail, Win, Draw }
 
-    event BET(uint256 index, address bettor, uint256 amount, byte challenges, uint256 answerBetInfo);
+    event BET(uint256 index, address bettor, uint256 amount, byte challenges, uint256 answerBlockNumber);
     event WIN(uint256 index, address bettor, uint256 amount, byte challenges, byte answer, uint256 answerBlockNumber);
     event FAIL(uint256 index, address bettor, uint256 amount, byte challenges, byte answer, uint256 answerBlockNumber);
     event DRAW(uint256 index, address bettor, uint256 amount, byte challenges, byte answer, uint256 answerBlockNumber);
